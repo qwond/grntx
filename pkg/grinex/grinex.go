@@ -27,7 +27,7 @@ func New(baseURL string) *Grinex {
 	}
 }
 
-func (g *Grinex) GetMarkets() ([]MarketDTO, error) {
+func (g *Grinex) GetMarkets() ([]Market, error) {
 	resp, err := g.client.Get(g.baseURL + MarketsURL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot make request:%e", err)
@@ -35,7 +35,7 @@ func (g *Grinex) GetMarkets() ([]MarketDTO, error) {
 
 	defer resp.Body.Close()
 
-	var markets []MarketDTO
+	var markets []Market
 
 	dec := json.NewDecoder(resp.Body)
 
@@ -47,22 +47,23 @@ func (g *Grinex) GetMarkets() ([]MarketDTO, error) {
 	return markets, nil
 }
 
-func (g *Grinex) GetRate(currency string) (RateDTO, error) {
-	var rate RateDTO
+func (g *Grinex) GetRate(pair string) (*Rate, error) {
+	var resp rateResponse
 
-	resp, err := g.client.Get(g.baseURL + RateURL + "?market=" + currency)
+	r, err := g.client.Get(g.baseURL + RateURL + "?market=" + pair)
 	if err != nil {
-		return rate, fmt.Errorf("cannot make request:%e", err)
+		return nil, fmt.Errorf("cannot make request:%e", err)
 	}
 
-	defer resp.Body.Close()
+	defer r.Body.Close()
 
-	decoder := json.NewDecoder(resp.Body)
+	decoder := json.NewDecoder(r.Body)
 
-	err = decoder.Decode(&rate)
+	err = decoder.Decode(&resp)
 	if err != nil {
-		return rate, fmt.Errorf("cannot decode response:%e", err)
+		return nil, fmt.Errorf("cannot decode response:%e", err)
 	}
 
-	return rate, nil
+	rate := RateFromDTO(resp, pair)
+	return &rate, nil
 }

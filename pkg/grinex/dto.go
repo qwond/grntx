@@ -1,6 +1,6 @@
 package grinex
 
-type MarketDTO struct {
+type Market struct {
 	ID              string `json:"id"`
 	Name            string `json:"name"`
 	AskUnit         string `json:"ask_unit"`
@@ -13,7 +13,9 @@ type MarketDTO struct {
 	VolumePrecision int    `json:"volume_precision"`
 }
 
-type RateDTO struct {
+// Rates response is abit more complex than required
+// so request object needs addition conversion
+type rateResponse struct {
 	Timestamp int `json:"timestamp"`
 	Asks      []struct {
 		Price  string `json:"price"`
@@ -29,4 +31,21 @@ type RateDTO struct {
 		Factor string `json:"factor"`
 		Type   string `json:"type"`
 	} `json:"bids"`
+}
+
+type Rate struct {
+	Pair      string
+	AskPrice  string
+	BidPrice  string
+	Timestamp int
+}
+
+func RateFromDTO(r rateResponse, pair string) Rate {
+	return Rate{
+		Pair:      pair,
+		AskPrice:  r.Asks[0].Price,
+		BidPrice:  r.Bids[0].Price,
+		Timestamp: r.Timestamp,
+	}
+
 }
