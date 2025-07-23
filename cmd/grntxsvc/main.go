@@ -20,7 +20,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("cant initialize logger: %v", err)
 	}
-	defer logger.Sync()
+
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	logger.Info("service starting")
 
@@ -36,14 +39,14 @@ func main() {
 	errChan := make(chan error, 1)
 
 	// Start server
-	lis, err := net.Listen("tcp", ":50051")
+	lstnr, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		logger.Fatal("failed to listen", zap.Error(err))
 	}
 
 	go func() {
-		logger.Info("server listening", zap.Any("Addr", lis.Addr()))
-		errChan <- grpcServer.Serve(lis)
+		logger.Info("server listening", zap.Any("Addr", lstnr.Addr()))
+		errChan <- grpcServer.Serve(lstnr)
 	}()
 
 	select {
@@ -53,6 +56,8 @@ func main() {
 	case sig := <-sigChan:
 		logger.Info("shutdown start")
 		defer logger.Info("shutdown complete", zap.Any("signal", sig))
-		lis.Close()
+		if err = lstnr.Close(); err != nil {
+			logger.Error("cannot close listener", zap.Error(err))
+		}
 	}
 }

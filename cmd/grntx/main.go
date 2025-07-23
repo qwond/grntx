@@ -23,10 +23,11 @@ func main() {
 	flag.Parse()
 
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(*serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(*serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
+	// nolint:all
 	defer conn.Close()
 
 	client := v1.NewRatesServiceClient(conn)
@@ -40,12 +41,9 @@ func main() {
 	ticker := time.NewTicker(*interval)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			if err := getRates(client, *pair); err != nil {
-				log.Printf("Error getting rates: %v", err)
-			}
+	for range ticker.C {
+		if err := getRates(client, *pair); err != nil {
+			log.Printf("Error getting rates: %v", err)
 		}
 	}
 }

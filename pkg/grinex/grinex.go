@@ -33,6 +33,7 @@ func (g *Grinex) GetMarkets() ([]Market, error) {
 		return nil, fmt.Errorf("cannot make request:%e", err)
 	}
 
+	//nolint: all
 	defer resp.Body.Close()
 
 	var markets []Market
@@ -54,7 +55,7 @@ func (g *Grinex) GetRate(pair string) (*Rate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot make request:%e", err)
 	}
-
+	// nolint: all
 	defer r.Body.Close()
 
 	decoder := json.NewDecoder(r.Body)
