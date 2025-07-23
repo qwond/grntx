@@ -16,7 +16,7 @@ type Market struct {
 // Rates response is abit more complex than required
 // so request object needs addition conversion
 type rateResponse struct {
-	Timestamp int `json:"timestamp"`
+	Timestamp int64 `json:"timestamp"`
 	Asks      []struct {
 		Price  string `json:"price"`
 		Volume string `json:"volume"`
@@ -37,7 +37,7 @@ type Rate struct {
 	Pair      string
 	AskPrice  string
 	BidPrice  string
-	Timestamp int
+	Timestamp int64
 }
 
 func RateFromDTO(r rateResponse, pair string) Rate {

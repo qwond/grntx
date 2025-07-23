@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package grntx.api.v1;
+
+option go_package = "github.com/qwond/grntx/api/v1";
+
+service RatesService {
+  rpc GetRates(GetRatesRequest) returns (GetRatesResponse);
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message GetRatesRequest {
+  string pair = 1; 
+}
+
+message GetRatesResponse {
+  string pair = 1;
+  string ask = 2;
+  string bid = 3;
+  int64 timestamp = 4;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string status = 1;
+}
