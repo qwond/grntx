@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"os"
@@ -8,11 +9,19 @@ import (
 	"syscall"
 
 	v1 "github.com/qwond/grntx/api/v1"
+	"github.com/qwond/grntx/database"
+	"github.com/qwond/grntx/internal/repository"
 	"github.com/qwond/grntx/internal/service"
 	"github.com/qwond/grntx/pkg/grinex"
+	"github.com/sethvargo/go-envconfig"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
+
+type Config struct {
+	DSN       string `env:"DSN, required"`
+	GrinexURL string `env:"GRINEX_URL, default=https://grinex.io"`
+}
 
 func main() {
 	// init logger
@@ -26,9 +35,30 @@ func main() {
 	}()
 
 	logger.Info("service starting")
+	ctx := context.Background()
+
+	// Load config from environment
+
+	var cfg Config
+	err = envconfig.Process(ctx, &cfg)
+	if err != nil {
+		logger.Fatal("cannot configure service", zap.Error(err))
+	}
+
+	// Migrate database
+	err = database.MigrateDB(cfg.DSN)
+	if err != nil {
+		log.Fatal("Failed to migrate database:", zap.Error(err))
+	}
+
+	// Create repository
+	repo, err := repository.New(cfg.DSN)
+	if err != nil {
+		log.Fatal("cannot create repository", zap.Error(err))
+	}
 
 	// Construct rates service
-	rateSvc := service.New(grinex.New("https://grinex.io"))
+	rateSvc := service.New(grinex.New(cfg.GrinexURL), repo)
 
 	grpcServer := grpc.NewServer()
 	v1.RegisterRatesServiceServer(grpcServer, rateSvc)

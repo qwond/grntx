@@ -4,18 +4,30 @@ import (
 	"context"
 
 	v1 "github.com/qwond/grntx/api/v1"
+	"github.com/qwond/grntx/internal/repository"
 	"github.com/qwond/grntx/pkg/grinex"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type RatesService struct {
+	repo *repository.Repository
 	v1.UnimplementedRatesServiceServer
 	grinex *grinex.Grinex
 }
 
+func New(grnx *grinex.Grinex, repo *repository.Repository) *RatesService {
+	return &RatesService{
+		repo:   repo,
+		grinex: grnx,
+	}
+}
+
 // GetRates implements v1.RatesServiceServer.
-func (rs *RatesService) GetRates(ctx context.Context, req *v1.GetRatesRequest) (*v1.GetRatesResponse, error) {
+func (rs *RatesService) GetRates(
+	ctx context.Context,
+	req *v1.GetRatesRequest,
+) (*v1.GetRatesResponse, error) {
 	pair := req.GetPair()
 	if pair == "" {
 		return nil, status.Error(codes.InvalidArgument, "pair is required")
@@ -32,12 +44,6 @@ func (rs *RatesService) GetRates(ctx context.Context, req *v1.GetRatesRequest) (
 		Bid:       rate.BidPrice,
 		Timestamp: int64(rate.Timestamp),
 	}, nil
-}
-
-func New(grnx *grinex.Grinex) *RatesService {
-	return &RatesService{
-		grinex: grnx,
-	}
 }
 
 // HealthCheck implements v1.RatesServiceServer.

@@ -38,3 +38,9 @@ gen: ## Run code generators
 
 lint: ## lint sources
 	golangci-lint run ./...
+
+run-service: ## runs service without compile
+	go run ./cmd/grntxsvc
+
+run-client:
+	go run ./cmd/grntx
