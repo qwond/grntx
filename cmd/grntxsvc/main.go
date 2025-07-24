@@ -10,9 +10,9 @@ import (
 
 	v1 "github.com/qwond/grntx/api/v1"
 	"github.com/qwond/grntx/database"
+	"github.com/qwond/grntx/internal/grinex"
 	"github.com/qwond/grntx/internal/repository"
 	"github.com/qwond/grntx/internal/service"
-	"github.com/qwond/grntx/pkg/grinex"
 	"github.com/sethvargo/go-envconfig"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// Construct rates service
-	rateSvc := service.New(grinex.New(cfg.GrinexURL), repo)
+	rateSvc := service.New(logger, grinex.New(cfg.GrinexURL), repo)
 
 	grpcServer := grpc.NewServer()
 	v1.RegisterRatesServiceServer(grpcServer, rateSvc)

@@ -1,52 +1,50 @@
 package service
 
 import (
-	"context"
+	"fmt"
 
 	v1 "github.com/qwond/grntx/api/v1"
+	"github.com/qwond/grntx/internal/domain"
+	"github.com/qwond/grntx/internal/grinex"
 	"github.com/qwond/grntx/internal/repository"
-	"github.com/qwond/grntx/pkg/grinex"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"go.uber.org/zap"
 )
 
 type RatesService struct {
-	repo *repository.Repository
-	v1.UnimplementedRatesServiceServer
+	log    *zap.Logger
+	pairs  map[string]domain.Pair // available pairs
+	rates  map[string]domain.Rate // rates cache
+	repo   *repository.Repository
 	grinex *grinex.Grinex
+
+	v1.UnimplementedRatesServiceServer
 }
 
-func New(grnx *grinex.Grinex, repo *repository.Repository) *RatesService {
-	return &RatesService{
+// Creates new RateService instance.
+func New(log *zap.Logger, grnx *grinex.Grinex, repo *repository.Repository) *RatesService {
+	rs := &RatesService{
+		log:    log,
+		pairs:  make(map[string]domain.Pair),
+		rates:  make(map[string]domain.Rate),
 		repo:   repo,
 		grinex: grnx,
 	}
+	rs.WarmUp()
+	return rs
 }
 
-// GetRates implements v1.RatesServiceServer.
-func (rs *RatesService) GetRates(
-	ctx context.Context,
-	req *v1.GetRatesRequest,
-) (*v1.GetRatesResponse, error) {
-	pair := req.GetPair()
-	if pair == "" {
-		return nil, status.Error(codes.InvalidArgument, "pair is required")
-	}
-
-	rate, err := rs.grinex.GetRate(pair)
+// WarmUp - RateService preparation:
+// - Retrieving fresh pairs list from remote and store into db
+// - Prepare caches
+func (rs *RatesService) WarmUp() error {
+	prs, err := rs.grinex.GetMarkets()
 	if err != nil {
-		return nil, status.Error(codes.Internal, "cannot retrieve rate for pair")
+		return fmt.Errorf("cannot proceed without initial pairs list:%e", err)
 	}
 
-	return &v1.GetRatesResponse{
-		Pair:      pair,
-		Ask:       rate.AskPrice,
-		Bid:       rate.BidPrice,
-		Timestamp: int64(rate.Timestamp),
-	}, nil
-}
+	for _, pr := range prs {
+		rs.pairs[pr.Pair] = pr
+	}
 
-// HealthCheck implements v1.RatesServiceServer.
-func (r *RatesService) HealthCheck(ctx context.Context, req *v1.HealthCheckRequest) (*v1.HealthCheckResponse, error) {
-	return &v1.HealthCheckResponse{Status: "SERVING"}, nil
+	return nil
 }

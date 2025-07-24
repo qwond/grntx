@@ -4,25 +4,12 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/qwond/grntx/internal/domain"
 )
 
-type Pair struct {
-	Pair            string // Pair key, lowercase pair name (e.g. usdtrub)
-	AskUnit         string // Primary crypto
-	BidUnit         string // Corresponding crypto
-	MinAsk          int64  // Minimal ask amount (int with volume precision)
-	MinBid          int64  // Minimal bid amount (int with volume precision)
-	MakerFee        int64  // Maker fee (int with price precision)
-	TakerFee        int64  // Taker fee (int with price precision)
-	PricePrecision  int    // Precision for price values processing
-	VolumePrecision int    // Precision for amounts value processing
-	CreatedAt       int64  // UTC unixtime
-	UpdatedAt       int64  // UTC unixtime
-}
-
 // mapRowToPair maps pgx.Row to Pair struct
-func mapRowToPair(r pgx.Row) (Pair, error) {
-	var p Pair
+func mapRowToPair(r pgx.Row) (domain.Pair, error) {
+	var p domain.Pair
 	err := r.Scan(
 		&p.Pair,
 		&p.AskUnit,
@@ -67,7 +54,7 @@ const PairUpsertSQL = `
 
 // UpsertPair - update or insert pair entity returning bool,error
 // where bool tells "it's new record" and error - db errors.
-func (repo *Repository) PairUpsert(ctx context.Context, pr Pair) (bool, error) {
+func (repo *Repository) PairUpsert(ctx context.Context, pr domain.Pair) (bool, error) {
 	var isInsert bool
 	err := repo.pool.QueryRow(ctx, PairUpsertSQL,
 		pr.Pair,
@@ -103,13 +90,13 @@ const PairsListSQL = `
 	FROM pairs`
 
 // PairsList returns all pairs stored in database.
-func (repo *Repository) PairsList(ctx context.Context) ([]Pair, error) {
+func (repo *Repository) PairsList(ctx context.Context) ([]domain.Pair, error) {
 	rows, err := repo.pool.Query(ctx, PairsListSQL)
 	if err != nil {
 		return nil, err
 	}
 
-	var pairs []Pair
+	var pairs []domain.Pair
 	for rows.Next() {
 		pair, err := mapRowToPair(rows)
 		if err != nil {

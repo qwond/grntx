@@ -10,14 +10,21 @@ service RatesService {
 }
 
 message GetRatesRequest {
-  string pair = 1; 
+  string symbol = 1; 
+}
+
+message Rate {
+  string pair      = 1;
+  string askUnit   = 2;
+  string bidUnit   = 3;
+  int64  askPrice  = 4;
+  int64  bidPrice  = 5;
+  int64  precision = 6;
+  int64  timestamp = 7;
 }
 
 message GetRatesResponse {
-  string pair = 1;
-  string ask = 2;
-  string bid = 3;
-  int64 timestamp = 4;
+  repeated Rate rates = 1;
 }
 
 message HealthCheckRequest {}

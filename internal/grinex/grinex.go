@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/qwond/grntx/internal/domain"
 )
 
 const (
@@ -27,7 +29,7 @@ func New(baseURL string) *Grinex {
 	}
 }
 
-func (g *Grinex) GetMarkets() ([]Market, error) {
+func (g *Grinex) GetMarkets() ([]domain.Pair, error) {
 	resp, err := g.client.Get(g.baseURL + MarketsURL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot make request:%e", err)
@@ -36,22 +38,27 @@ func (g *Grinex) GetMarkets() ([]Market, error) {
 	//nolint: all
 	defer resp.Body.Close()
 
-	var markets []Market
+	var data []pairResponse
 
 	dec := json.NewDecoder(resp.Body)
 
-	err = dec.Decode(&markets)
+	err = dec.Decode(&data)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode response:%e", err)
 	}
 
-	return markets, nil
+	pairs := []domain.Pair{}
+	for _, item := range data {
+		pairs = append(pairs, PairFromDTO(item))
+	}
+
+	return pairs, nil
 }
 
-func (g *Grinex) GetRate(pair string) (*Rate, error) {
+func (g *Grinex) GetRate(pair domain.Pair) (*domain.Rate, error) {
 	var resp rateResponse
 
-	r, err := g.client.Get(g.baseURL + RateURL + "?market=" + pair)
+	r, err := g.client.Get(g.baseURL + RateURL + "?market=" + pair.Pair)
 	if err != nil {
 		return nil, fmt.Errorf("cannot make request:%e", err)
 	}
@@ -65,6 +72,7 @@ func (g *Grinex) GetRate(pair string) (*Rate, error) {
 		return nil, fmt.Errorf("cannot decode response:%e", err)
 	}
 
-	rate := RateFromDTO(resp, pair)
+	rate, err := RateFromDTO(resp, pair)
+
 	return &rate, nil
 }

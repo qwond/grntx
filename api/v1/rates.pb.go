@@ -23,7 +23,7 @@ const (
 
 type GetRatesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Pair          string                 `protobuf:"bytes,1,opt,name=pair,proto3" json:"pair,omitempty"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,26 +58,115 @@ func (*GetRatesRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_rates_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetRatesRequest) GetPair() string {
+func (x *GetRatesRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+type Rate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pair          string                 `protobuf:"bytes,1,opt,name=pair,proto3" json:"pair,omitempty"`
+	AskUnit       string                 `protobuf:"bytes,2,opt,name=askUnit,proto3" json:"askUnit,omitempty"`
+	BidUnit       string                 `protobuf:"bytes,3,opt,name=bidUnit,proto3" json:"bidUnit,omitempty"`
+	AskPrice      int64                  `protobuf:"varint,4,opt,name=askPrice,proto3" json:"askPrice,omitempty"`
+	BidPrice      int64                  `protobuf:"varint,5,opt,name=bidPrice,proto3" json:"bidPrice,omitempty"`
+	Precision     int64                  `protobuf:"varint,6,opt,name=precision,proto3" json:"precision,omitempty"`
+	Timestamp     int64                  `protobuf:"varint,7,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Rate) Reset() {
+	*x = Rate{}
+	mi := &file_api_v1_rates_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Rate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rate) ProtoMessage() {}
+
+func (x *Rate) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_rates_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Rate.ProtoReflect.Descriptor instead.
+func (*Rate) Descriptor() ([]byte, []int) {
+	return file_api_v1_rates_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Rate) GetPair() string {
 	if x != nil {
 		return x.Pair
 	}
 	return ""
 }
 
+func (x *Rate) GetAskUnit() string {
+	if x != nil {
+		return x.AskUnit
+	}
+	return ""
+}
+
+func (x *Rate) GetBidUnit() string {
+	if x != nil {
+		return x.BidUnit
+	}
+	return ""
+}
+
+func (x *Rate) GetAskPrice() int64 {
+	if x != nil {
+		return x.AskPrice
+	}
+	return 0
+}
+
+func (x *Rate) GetBidPrice() int64 {
+	if x != nil {
+		return x.BidPrice
+	}
+	return 0
+}
+
+func (x *Rate) GetPrecision() int64 {
+	if x != nil {
+		return x.Precision
+	}
+	return 0
+}
+
+func (x *Rate) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
 type GetRatesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Pair          string                 `protobuf:"bytes,1,opt,name=pair,proto3" json:"pair,omitempty"`
-	Ask           string                 `protobuf:"bytes,2,opt,name=ask,proto3" json:"ask,omitempty"`
-	Bid           string                 `protobuf:"bytes,3,opt,name=bid,proto3" json:"bid,omitempty"`
-	Timestamp     int64                  `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Rates         []*Rate                `protobuf:"bytes,1,rep,name=rates,proto3" json:"rates,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetRatesResponse) Reset() {
 	*x = GetRatesResponse{}
-	mi := &file_api_v1_rates_proto_msgTypes[1]
+	mi := &file_api_v1_rates_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -89,7 +178,7 @@ func (x *GetRatesResponse) String() string {
 func (*GetRatesResponse) ProtoMessage() {}
 
 func (x *GetRatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_rates_proto_msgTypes[1]
+	mi := &file_api_v1_rates_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -102,35 +191,14 @@ func (x *GetRatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRatesResponse.ProtoReflect.Descriptor instead.
 func (*GetRatesResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_rates_proto_rawDescGZIP(), []int{1}
+	return file_api_v1_rates_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetRatesResponse) GetPair() string {
+func (x *GetRatesResponse) GetRates() []*Rate {
 	if x != nil {
-		return x.Pair
+		return x.Rates
 	}
-	return ""
-}
-
-func (x *GetRatesResponse) GetAsk() string {
-	if x != nil {
-		return x.Ask
-	}
-	return ""
-}
-
-func (x *GetRatesResponse) GetBid() string {
-	if x != nil {
-		return x.Bid
-	}
-	return ""
-}
-
-func (x *GetRatesResponse) GetTimestamp() int64 {
-	if x != nil {
-		return x.Timestamp
-	}
-	return 0
+	return nil
 }
 
 type HealthCheckRequest struct {
@@ -141,7 +209,7 @@ type HealthCheckRequest struct {
 
 func (x *HealthCheckRequest) Reset() {
 	*x = HealthCheckRequest{}
-	mi := &file_api_v1_rates_proto_msgTypes[2]
+	mi := &file_api_v1_rates_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -153,7 +221,7 @@ func (x *HealthCheckRequest) String() string {
 func (*HealthCheckRequest) ProtoMessage() {}
 
 func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_rates_proto_msgTypes[2]
+	mi := &file_api_v1_rates_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -166,7 +234,7 @@ func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
 func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_rates_proto_rawDescGZIP(), []int{2}
+	return file_api_v1_rates_proto_rawDescGZIP(), []int{3}
 }
 
 type HealthCheckResponse struct {
@@ -178,7 +246,7 @@ type HealthCheckResponse struct {
 
 func (x *HealthCheckResponse) Reset() {
 	*x = HealthCheckResponse{}
-	mi := &file_api_v1_rates_proto_msgTypes[3]
+	mi := &file_api_v1_rates_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +258,7 @@ func (x *HealthCheckResponse) String() string {
 func (*HealthCheckResponse) ProtoMessage() {}
 
 func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_rates_proto_msgTypes[3]
+	mi := &file_api_v1_rates_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +271,7 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
 func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_rates_proto_rawDescGZIP(), []int{3}
+	return file_api_v1_rates_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *HealthCheckResponse) GetStatus() string {
@@ -217,14 +285,19 @@ var File_api_v1_rates_proto protoreflect.FileDescriptor
 
 const file_api_v1_rates_proto_rawDesc = "" +
 	"\n" +
-	"\x12api/v1/rates.proto\x12\fgrntx.api.v1\"%\n" +
-	"\x0fGetRatesRequest\x12\x12\n" +
-	"\x04pair\x18\x01 \x01(\tR\x04pair\"h\n" +
-	"\x10GetRatesResponse\x12\x12\n" +
-	"\x04pair\x18\x01 \x01(\tR\x04pair\x12\x10\n" +
-	"\x03ask\x18\x02 \x01(\tR\x03ask\x12\x10\n" +
-	"\x03bid\x18\x03 \x01(\tR\x03bid\x12\x1c\n" +
-	"\ttimestamp\x18\x04 \x01(\x03R\ttimestamp\"\x14\n" +
+	"\x12api/v1/rates.proto\x12\fgrntx.api.v1\")\n" +
+	"\x0fGetRatesRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"\xc2\x01\n" +
+	"\x04Rate\x12\x12\n" +
+	"\x04pair\x18\x01 \x01(\tR\x04pair\x12\x18\n" +
+	"\aaskUnit\x18\x02 \x01(\tR\aaskUnit\x12\x18\n" +
+	"\abidUnit\x18\x03 \x01(\tR\abidUnit\x12\x1a\n" +
+	"\baskPrice\x18\x04 \x01(\x03R\baskPrice\x12\x1a\n" +
+	"\bbidPrice\x18\x05 \x01(\x03R\bbidPrice\x12\x1c\n" +
+	"\tprecision\x18\x06 \x01(\x03R\tprecision\x12\x1c\n" +
+	"\ttimestamp\x18\a \x01(\x03R\ttimestamp\"<\n" +
+	"\x10GetRatesResponse\x12(\n" +
+	"\x05rates\x18\x01 \x03(\v2\x12.grntx.api.v1.RateR\x05rates\"\x14\n" +
 	"\x12HealthCheckRequest\"-\n" +
 	"\x13HealthCheckResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status2\xad\x01\n" +
@@ -244,23 +317,25 @@ func file_api_v1_rates_proto_rawDescGZIP() []byte {
 	return file_api_v1_rates_proto_rawDescData
 }
 
-var file_api_v1_rates_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_api_v1_rates_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_v1_rates_proto_goTypes = []any{
 	(*GetRatesRequest)(nil),     // 0: grntx.api.v1.GetRatesRequest
-	(*GetRatesResponse)(nil),    // 1: grntx.api.v1.GetRatesResponse
-	(*HealthCheckRequest)(nil),  // 2: grntx.api.v1.HealthCheckRequest
-	(*HealthCheckResponse)(nil), // 3: grntx.api.v1.HealthCheckResponse
+	(*Rate)(nil),                // 1: grntx.api.v1.Rate
+	(*GetRatesResponse)(nil),    // 2: grntx.api.v1.GetRatesResponse
+	(*HealthCheckRequest)(nil),  // 3: grntx.api.v1.HealthCheckRequest
+	(*HealthCheckResponse)(nil), // 4: grntx.api.v1.HealthCheckResponse
 }
 var file_api_v1_rates_proto_depIdxs = []int32{
-	0, // 0: grntx.api.v1.RatesService.GetRates:input_type -> grntx.api.v1.GetRatesRequest
-	2, // 1: grntx.api.v1.RatesService.HealthCheck:input_type -> grntx.api.v1.HealthCheckRequest
-	1, // 2: grntx.api.v1.RatesService.GetRates:output_type -> grntx.api.v1.GetRatesResponse
-	3, // 3: grntx.api.v1.RatesService.HealthCheck:output_type -> grntx.api.v1.HealthCheckResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: grntx.api.v1.GetRatesResponse.rates:type_name -> grntx.api.v1.Rate
+	0, // 1: grntx.api.v1.RatesService.GetRates:input_type -> grntx.api.v1.GetRatesRequest
+	3, // 2: grntx.api.v1.RatesService.HealthCheck:input_type -> grntx.api.v1.HealthCheckRequest
+	2, // 3: grntx.api.v1.RatesService.GetRates:output_type -> grntx.api.v1.GetRatesResponse
+	4, // 4: grntx.api.v1.RatesService.HealthCheck:output_type -> grntx.api.v1.HealthCheckResponse
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_rates_proto_init() }
@@ -274,7 +349,7 @@ func file_api_v1_rates_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_rates_proto_rawDesc), len(file_api_v1_rates_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

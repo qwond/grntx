@@ -6,16 +6,17 @@ import (
 	"os"
 	"testing"
 
+	"github.com/qwond/grntx/internal/domain"
 	"github.com/qwond/grntx/internal/repository"
 )
 
-func setupRepo() (*repository.Repository, []repository.Pair, error) {
+func setupRepo() (*repository.Repository, []domain.Pair, error) {
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
 		return nil, nil, fmt.Errorf("please set DSN environment variable")
 	}
 
-	pairAAABBB := repository.Pair{
+	pairAAABBB := domain.Pair{
 		Pair:            "aaabbb",
 		AskUnit:         "AAA",
 		BidUnit:         "BBB",
@@ -27,7 +28,7 @@ func setupRepo() (*repository.Repository, []repository.Pair, error) {
 		VolumePrecision: 2,
 	}
 
-	pairXXXYYY := repository.Pair{
+	pairXXXYYY := domain.Pair{
 		Pair:            "xxxyyyy",
 		AskUnit:         "XXX",
 		BidUnit:         "YYY",
@@ -39,7 +40,7 @@ func setupRepo() (*repository.Repository, []repository.Pair, error) {
 		VolumePrecision: 2,
 	}
 
-	pairs := []repository.Pair{pairAAABBB, pairXXXYYY}
+	pairs := []domain.Pair{pairAAABBB, pairXXXYYY}
 
 	repo, err := repository.New(dsn)
 	if err != nil {
