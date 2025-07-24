@@ -48,17 +48,20 @@ func main() {
 	// Migrate database
 	err = database.MigrateDB(cfg.DSN)
 	if err != nil {
-		log.Fatal("Failed to migrate database:", zap.Error(err))
+		logger.Fatal("Failed to migrate database:", zap.Error(err))
 	}
 
 	// Create repository
 	repo, err := repository.New(cfg.DSN)
 	if err != nil {
-		log.Fatal("cannot create repository", zap.Error(err))
+		logger.Fatal("cannot create repository", zap.Error(err))
 	}
 
 	// Construct rates service
-	rateSvc := service.New(logger, grinex.New(cfg.GrinexURL), repo)
+	rateSvc, err := service.New(logger, grinex.New(cfg.GrinexURL), repo)
+	if err != nil {
+		logger.Fatal("cannot prepare service", zap.Error(err))
+	}
 
 	grpcServer := grpc.NewServer()
 	v1.RegisterRatesServiceServer(grpcServer, rateSvc)

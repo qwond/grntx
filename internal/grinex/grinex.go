@@ -73,6 +73,9 @@ func (g *Grinex) GetRate(pair domain.Pair) (*domain.Rate, error) {
 	}
 
 	rate, err := RateFromDTO(resp, pair)
+	if err != nil {
+		return nil, err
+	}
 
 	return &rate, nil
 }

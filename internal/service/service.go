@@ -21,7 +21,7 @@ type RatesService struct {
 }
 
 // Creates new RateService instance.
-func New(log *zap.Logger, grnx *grinex.Grinex, repo *repository.Repository) *RatesService {
+func New(log *zap.Logger, grnx *grinex.Grinex, repo *repository.Repository) (*RatesService, error) {
 	rs := &RatesService{
 		log:    log,
 		pairs:  make(map[string]domain.Pair),
@@ -29,8 +29,8 @@ func New(log *zap.Logger, grnx *grinex.Grinex, repo *repository.Repository) *Rat
 		repo:   repo,
 		grinex: grnx,
 	}
-	rs.WarmUp()
-	return rs
+
+	return rs, rs.WarmUp()
 }
 
 // WarmUp - RateService preparation:
